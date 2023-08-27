@@ -61,11 +61,19 @@ export class AuthService {
         },
       },
     );
-    console.log(data);
+    //console.log(data);
     return {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expire: Number(new Date()) + data.expires_in * 1000,
     };
+  }
+
+  getInfoLead(leadId) {
+    console.log(this.accountsService.getInfoLead(leadId))
+  }
+
+  createLead(data) {
+    this.accountsService.createLead(data);
   }
 }

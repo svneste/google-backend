@@ -2,9 +2,10 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { Account } from './account.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
 import { AuthService } from 'src/auth/auth.service';
 import { GrantTypes } from 'src/enums/grant-types.enum';
+import { CalendarService } from 'src/calendar/calendar.service';
 
 @Injectable()
 export class AccountsService {
@@ -13,12 +14,12 @@ export class AccountsService {
     private accountsRepo: Repository<Account>,
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService,
+    private calendarService: CalendarService,
   ) {}
 
   async onModuleInit() {
     const api = this.createConnector(31208198);
-    console.log(await api.get('/api/v4/account'));
-    
+    //console.log(await api.get('/api/v4/account'));
   }
 
   findByAmoId(amoId: number): Promise<Account> {
@@ -69,5 +70,32 @@ export class AccountsService {
     );
 
     return api;
+  }
+
+  async getInfoLead(leadId) {
+    const api = this.createConnector(31208198);
+    const leadsList = await api.get(`/api/v4/leads/${leadId}`);
+    this.getInfoForCalendar(leadsList);
+  }
+
+  async getInfoForCalendar(data) {
+    await this.calendarService.insertEvent(data);
+  }
+
+  async createLead(dataForLead) {
+    console.log(dataForLead.name);
+    const api = this.createConnector(31208198);
+
+    await api.post(
+      '/api/v4/leads',
+
+      [
+        {
+          name: dataForLead.name,
+          created_by: 0,
+          price: dataForLead.price,
+        },
+      ],
+    );
   }
 }
