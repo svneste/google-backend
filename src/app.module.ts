@@ -10,14 +10,19 @@ import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true,  load: [config]}),
+    ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5431,
-      username: 'postgres',
-      password: '123',
-      database: 'nestjs',
+      //host: 'localhost',
+      //port: 5431,
+      // username: 'postgres',
+      // password: '123',
+      // database: 'nestjs',
+      host: 'rc1b-3wb0fegwhfqjgpfu.mdb.yandexcloud.net',
+      port: 6432,
+      username: 'svneste3',
+      password: 'vo5daxju1m9j',
+      database: 'bd_main',
       autoLoadEntities: true,
       synchronize: true,
     }),
