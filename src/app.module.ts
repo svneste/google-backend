@@ -21,7 +21,7 @@ import { CalendarModule } from './calendar/calendar.module';
       // host: '84.252.137.156',
       host: 'localhost',
       port: 5432,
-      username: 'svneste',
+      username: 'svneste3',
       password: '37043704',
       database: 'google',
       autoLoadEntities: true,
