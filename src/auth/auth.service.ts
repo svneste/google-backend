@@ -13,7 +13,6 @@ export class AuthService {
     private configService: ConfigService,
     @Inject(forwardRef(() => AccountsService))
     private accountsService: AccountsService,
-    
   ) {}
 
   async performCallback(query: AuthCallbackQuery): Promise<string> {
@@ -61,7 +60,7 @@ export class AuthService {
         },
       },
     );
-    //console.log(data);
+
     return {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
@@ -69,8 +68,8 @@ export class AuthService {
     };
   }
 
-  getInfoLead(leadId) {
-    console.log(this.accountsService.getInfoLead(leadId))
+  async getInfoLead(leadId) {
+    await this.accountsService.addEventsForArrayBase(leadId);
   }
 
   createLead(data) {

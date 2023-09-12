@@ -9,14 +9,14 @@ export class CalendarController {
     return await this.calendarService.performCallback();
   }
 
-  @Get('events')
-  async getEvents() {
-  //  return await this.calendarService.authorize();
-  //  return await this.calendarService.performCallback().then(this.calendarService.insertEvent).catch(console.error);
+  @Get('auth')
+  async auth() {
+    this.calendarService.authCalendar();
   }
 
-//   @Get('auth')
-//   async getTest() {
-//     return await this.calendarService.getEvents();
-//   }
+  @Get('events')
+  async getEvents() {
+    //  return await this.calendarService.authorize();
+    //  return await this.calendarService.performCallback().then(this.calendarService.insertEvent).catch(console.error);
+  }
 }

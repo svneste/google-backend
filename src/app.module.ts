@@ -7,19 +7,20 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from './config';
 import { CalendarModule } from './calendar/calendar.module';
+import { AccountSetupModule } from './account-setup/account-setup.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     TypeOrmModule.forRoot({
       type: 'postgres',
+      //host: 'localhost',
+     //port: 5431,
+     //username: 'postgres',
+     //password: '123',
+      //database: 'nestjs',
+      host: '84.252.137.156',
       // host: 'localhost',
-      // port: 5431,
-      // username: 'postgres',
-      // password: '123',
-      // database: 'nestjs',
-      // host: '84.252.137.156',
-      host: 'localhost',
       port: 5432,
       username: 'svneste3',
       password: '37043704',
@@ -30,6 +31,7 @@ import { CalendarModule } from './calendar/calendar.module';
     AccountsModule,
     AuthModule,
     CalendarModule,
+    AccountSetupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

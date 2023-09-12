@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/typeorm": "^10.0.0",
     "axios": "^1.4.0",
+    "cyrillic-to-translit-js": "^3.2.1",
     "google-auth-library": "^9.0.0",
     "googleapis": "^105.0.0",
     "jsonwebtoken": "^9.0.1",

@@ -14,8 +14,8 @@ export class AuthController {
   @All('/webhooks')
   async webhooks(@Body() body: any) {
     let leadId;
-    body.leads.status.map((a) => (leadId = a.id));
-    console.log(this.authService.getInfoLead(leadId));
+    body.leads.status.map((a) => (leadId = a.id)); //получаем ID конкретной сделки
+    this.authService.getInfoLead(leadId);
   }
 
   @Post('/create')
