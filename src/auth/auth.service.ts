@@ -16,6 +16,7 @@ export class AuthService {
   ) {}
 
   async performCallback(query: AuthCallbackQuery): Promise<string> {
+    console.log(query);
     const oauth: OAuthField = await this.getNewTokens(
       query.code,
       query.referer,
@@ -45,6 +46,7 @@ export class AuthService {
     domain: string,
     type: GrantTypes = GrantTypes.AuthCode,
   ) {
+    console.log('запустили getNewTokens')
     const { data } = await axios.post(
       `https://${domain}/oauth2/access_token`,
       {
