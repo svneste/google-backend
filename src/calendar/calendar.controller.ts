@@ -11,7 +11,7 @@ export class CalendarController {
 
   @Get('auth')
   async auth() {
-    this.calendarService.authCalendar();
+    await this.calendarService.authCalendar();
   }
 
   @Get('events')

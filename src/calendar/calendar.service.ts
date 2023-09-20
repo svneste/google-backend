@@ -27,8 +27,10 @@ export class CalendarService {
         scopes: this.SCOPES,
         keyfilePath: this.CREDENTIALS_PATH,
       });
-    } catch (err){
+    } catch (err) {
       console.log('Ошибка', err);
+    } finally {
+      console.log('Отработал finally')
     }
 
     console.log(client, 'client');
