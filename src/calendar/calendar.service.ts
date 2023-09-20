@@ -19,13 +19,13 @@ export class CalendarService {
   //Первичная авторизация в Google календаре
 
   async authCalendar() {
-    console.log('Запустили скрипт авторизации')
+    console.log('Запустили скрипт авторизации');
     let client = await authenticate({
       scopes: this.SCOPES,
       keyfilePath: this.CREDENTIALS_PATH,
     });
 
-    console.log(client, 'client')
+    console.log(client, 'client');
 
     if (client.credentials) {
       await this.saveCredentials(client);
@@ -47,6 +47,8 @@ export class CalendarService {
 
     if (client.credentials) {
       await this.saveCredentials(client);
+    } else {
+      console.log('ничего нет')
     }
 
     return client;
@@ -85,6 +87,7 @@ export class CalendarService {
     'https://www.googleapis.com/auth/calendar.events',
   ];
   TOKEN_PATH = path.join(process.cwd(), 'token.json');
+
   CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
   refresh_token = '';
 
