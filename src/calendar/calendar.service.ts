@@ -20,6 +20,7 @@ export class CalendarService {
 
   async authCalendar() {
     console.log('Запустили скрипт авторизации');
+    console.log('this.CREDENTIALS_PATH', this.CREDENTIALS_PATH);
     let client = await authenticate({
       scopes: this.SCOPES,
       keyfilePath: this.CREDENTIALS_PATH,
