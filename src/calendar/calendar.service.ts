@@ -25,6 +25,8 @@ export class CalendarService {
       keyfilePath: this.CREDENTIALS_PATH,
     });
 
+    console.log(client, 'client')
+
     if (client.credentials) {
       await this.saveCredentials(client);
     }
