@@ -29,6 +29,8 @@ export class CalendarService {
 
     if (client.credentials) {
       await this.saveCredentials(client);
+    } else {
+      console.log('ничего нет')
     }
   }
 
@@ -47,10 +49,7 @@ export class CalendarService {
 
     if (client.credentials) {
       await this.saveCredentials(client);
-    } else {
-      console.log('ничего нет')
-    }
-
+    } 
     return client;
   }
 
