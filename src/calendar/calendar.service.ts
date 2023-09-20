@@ -21,17 +21,22 @@ export class CalendarService {
   async authCalendar() {
     console.log('Запустили скрипт авторизации');
     console.log('this.CREDENTIALS_PATH', this.CREDENTIALS_PATH);
-    let client = await authenticate({
-      scopes: this.SCOPES,
-      keyfilePath: this.CREDENTIALS_PATH,
-    });
+    let client;
+    try {
+      client = await authenticate({
+        scopes: this.SCOPES,
+        keyfilePath: this.CREDENTIALS_PATH,
+      });
+    } catch {
+      console.log('Ошибка');
+    }
 
     console.log(client, 'client');
 
     if (client.credentials) {
       await this.saveCredentials(client);
     } else {
-      console.log('ничего нет')
+      console.log('ничего нет');
     }
   }
 
@@ -50,7 +55,7 @@ export class CalendarService {
 
     if (client.credentials) {
       await this.saveCredentials(client);
-    } 
+    }
     return client;
   }
 
@@ -65,7 +70,7 @@ export class CalendarService {
       return null;
     }
   }
-
+  // "redirect_uris": ["http://localhost"]
   // Функция которая будет сохранять данные в базу
 
   async saveCredentials(client) {
