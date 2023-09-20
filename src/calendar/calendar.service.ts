@@ -19,6 +19,7 @@ export class CalendarService {
   //Первичная авторизация в Google календаре
 
   async authCalendar() {
+    console.log('Запустили скрипт авторизации')
     let client = await authenticate({
       scopes: this.SCOPES,
       keyfilePath: this.CREDENTIALS_PATH,
@@ -122,7 +123,9 @@ export class CalendarService {
           location: `${namePlace}`,
           description: `Ответственный сотрудник в amoCRM: ${this.config.get(
             events.responsible_user,
-          )} <br />Ссылка на сделку в <a href="${events.leadLink}"> amoCRM </a> `,
+          )} <br />Ссылка на сделку в <a href="${
+            events.leadLink
+          }"> amoCRM </a> `,
           start: {
             dateTime: new Date(events.dataStartEvent * 1000).toISOString(),
             timeZone: 'Europe/Moscow',
@@ -164,13 +167,12 @@ export class CalendarService {
       let namePlaceForEnv = a.replace(/\s+/g, '');
       let calendarId = this.config.get(`${namePlaceForEnv}`);
       this.insertEventsByDateBase(events, calendarId, namePlace);
-
     });
   }
 
   // Сценарий проверки на этап Нереализовано - если этот этап то распредялть запрос
 
-  async checkRequestByDelete (data) {
+  async checkRequestByDelete(data) {
     let events = await this.findByEventId(data.idLead);
 
     if (data.status_id === 143) {
@@ -182,14 +184,13 @@ export class CalendarService {
           let idEvent = a.split('/')[0];
           let calendarIdName = a.split('/')[1].replace(/\s+/g, '');
           let calendarId = this.config.get(`${calendarIdName}`);
-          console.log('Удаляем события из календаря и базы')
+          console.log('Удаляем события из календаря и базы');
           this.deleteEventForCalendar(calendarId, idEvent, events.idLead);
-        })
+        });
       }
     } else {
       this.insertDateBaseInfoByEvents(data, events);
     }
-
   }
 
   // ИЛИ ЗАПИСЫВАЕМ ДАННЫЕ В БАЗУ ИЛИ ЕСЛИ ДАННЫЕ УЖЕ ЕСТЬ ТО ОБНОВЛЯЕМ
@@ -197,11 +198,11 @@ export class CalendarService {
   async insertDateBaseInfoByEvents(data, events) {
     // если в базе ничего не найдено нужно сохранить данные в базу и запустить создание события из базы
     if (!events) {
-        await this.eventsCalendarRepo.save(data);
-        await this.prepareDateForCalendar(data.idLead);
+      await this.eventsCalendarRepo.save(data);
+      await this.prepareDateForCalendar(data.idLead);
     } else {
       /// Если запись в базе есть - и статус нереализовано нужно найти какие есть события в календаре и удалить из из календаря и убрать из базы
-      
+
       console.log(events, 'вот это нашли в базе');
       if (events.placeEvent.length !== data.placeEvent.length) {
         // данные по площадкам текущей сделки отличаются - нужно проверять удалять события или добавлять ! Нужно еще проверять вдруг площадка другая хотя количество не менялось
@@ -355,7 +356,6 @@ export class CalendarService {
     });
   }
 
-
   async getEventForCalendar(calendarId, eventId, event) {
     let auth = await this.performCallback();
     const calendar = google.calendar({ version: 'v3', auth });
@@ -416,7 +416,7 @@ export class CalendarService {
 
   // ПРОСТО ПОУЧАЕМ СОБЫТИЕ В КАЛЕНДАРЕ
 
-  async getEventsNew (calendarId, eventId) {
+  async getEventsNew(calendarId, eventId) {
     let auth = await this.performCallback();
     const calendar = google.calendar({ version: 'v3', auth });
 
