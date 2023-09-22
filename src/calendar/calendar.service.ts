@@ -5,6 +5,7 @@ import { google } from 'googleapis';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Calendar } from './calendar.entity';
 import { Repository } from 'typeorm';
+import { OAuth2Client } from 'google-auth-library';
 const path = require('node:path');
 const fs = require('fs').promises;
 
@@ -17,7 +18,6 @@ export class CalendarService {
   ) {}
 
   //Первичная авторизация в Google календаре
-
   async authCalendar() {
     console.log('Запустили скрипт авторизации');
     console.log('this.CREDENTIALS_PATH', this.CREDENTIALS_PATH);
@@ -41,6 +41,8 @@ export class CalendarService {
       console.log('ничего нет');
     }
   }
+
+
 
   // Обрабатываем ответ от Google который приходит при авторизации пользователя
 
@@ -72,8 +74,6 @@ export class CalendarService {
       return null;
     }
   }
-  // "redirect_uris": ["http://localhost"]
-  // Функция которая будет сохранять данные в базу
 
   async saveCredentials(client) {
     const content = await fs.readFile(this.CREDENTIALS_PATH);

@@ -2,44 +2,48 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { AccountSetup } from './account-setup.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { OAuth2Client } from 'google-auth-library';
+import { google } from 'googleapis';
+import { GoogleAuth } from 'google-auth-library';
+const fs = require('fs').promises;
+const path = require('node:path');
 
 @Injectable()
 export class AccountSetupService {
-  constructor(
-    @InjectRepository(AccountSetup)
-    private accountSetupRepo: Repository<AccountSetup>,
-  ) {}
+  private readonly authClient;
 
-  //   onModuleInit() {
-  //     let data = {
-  //         amoId: 30062854,
-  //         domain: 'eventmoskvaa.amocrm.ru',
-  //         placeList: [],
-  //     };
-
-  //       data.placeList = [
-  //        'BlaBlaBar/900c995acec8ef6f5436045f6f596ee236bec627ad9d12979e987016874de2f3@group.calendar.google.com', 'NEBO/b99ff8e5b8293cb5bd46d1e3305ba9847dfd8d8e4b81708fabd288f3fe2d9dc3@group.calendar.google.com',
-  //        'Известия Hall/132569f45c049a9253c939aa7e2200765f92411670ec5127b95b5ab8ace8f160@group.calendar.google.com'
-  //       ]
-
-  //     this.accountSetupRepo.save( data );
-  //   }
-
-//   async onModuleInit() {
-//     let configData =  await this.getAccountSetup(30062854);
-
-//     console.log(configData.placeList);
-//   }
-
-  async getAccountSetup(amoId) {
-    return await this.accountSetupRepo.findOne({
-        where: {
-          amoId,
-        },
-      });
+  constructor() {
+    this.authClient = new google.auth.OAuth2(
+      '823846756849-3ov5ire1f75ta50v8q6csgcra2dg84ar.apps.googleusercontent.com',
+      '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',
+      'https://764e-94-29-14-210.ngrok-free.app/account-setup/oauth2callback',
+    );
   }
 
+  CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
+  getAuthUrl() {
+    const scopes = [
+      'https://www.googleapis.com/auth/calendar',
+      'https://www.googleapis.com/auth/calendar.readonly',
+      'https://www.googleapis.com/auth/calendar.events',
+    ];
+    console.log('запустили getAuthUrl')
+
+    return this.authClient.generateAuthUrl({
+      access_type: 'offline',
+      scope: scopes,
+    });
+  }
+
+  async getAccessToken(code: string) {
+    console.log('запущен getAccessToken')
+    const { tokens } = await this.authClient.getToken(code);
+    return tokens;
+  }
+
+  getOAuthClient(tokens) {
+    this.authClient.setCredentials(tokens);
+    return this.authClient;
+  }
 }
-
-
