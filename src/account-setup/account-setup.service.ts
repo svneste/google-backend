@@ -11,7 +11,7 @@ export class AccountSetupService {
     this.authClient = new google.auth.OAuth2(
       '823846756849-3ov5ire1f75ta50v8q6csgcra2dg84ar.apps.googleusercontent.com',
       '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',
-      'https://764e-94-29-14-210.ngrok-free.app/auth/account-setup/oauth2callback',
+      'https://api.melabs.ru/auth/account-setup/oauth2callback',
     );
   }
 
