@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { AccountSetup } from './account-setup.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
-import { GoogleAuth } from 'google-auth-library';
 const fs = require('fs').promises;
 const path = require('node:path');
 
@@ -16,7 +11,7 @@ export class AccountSetupService {
     this.authClient = new google.auth.OAuth2(
       '823846756849-3ov5ire1f75ta50v8q6csgcra2dg84ar.apps.googleusercontent.com',
       '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',
-      'https://764e-94-29-14-210.ngrok-free.app/account-setup/oauth2callback',
+      'https://764e-94-29-14-210.ngrok-free.app/auth/account-setup/oauth2callback',
     );
   }
 
