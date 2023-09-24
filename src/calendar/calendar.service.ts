@@ -123,6 +123,7 @@ export class CalendarService {
   async insertEventsByDateBase(events, calendarId, namePlace) {
     // в этом сценарии нам нужно получить auth из сценария авторизации в Google APi то есть мы должны обратиться в google service и от туда получить авторизационные данные
     //let auth = await this.performCallback();
+    console.log('Запущен insertEventsByDateBase')
     let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
