@@ -46,7 +46,6 @@ export class AuthService {
     domain: string,
     type: GrantTypes = GrantTypes.AuthCode,
   ) {
-    console.log('запустили getNewTokens')
     const { data } = await axios.post(
       `https://${domain}/oauth2/access_token`,
       {
@@ -70,8 +69,8 @@ export class AuthService {
     };
   }
 
-  async getInfoLead(leadId) {
-    await this.accountsService.addEventsForArrayBase(leadId);
+  async getInfoLead(leadId, accountId) {
+    await this.accountsService.addEventsForArrayBase(leadId, accountId);
   }
 
   createLead(data) {

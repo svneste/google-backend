@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Calendar } from './calendar.entity';
 import { Repository } from 'typeorm';
 import { OAuth2Client } from 'google-auth-library';
+import { GoogleService } from 'src/google/google.service';
 const path = require('node:path');
 const fs = require('fs').promises;
 
@@ -15,12 +16,11 @@ export class CalendarService {
     private config: ConfigService,
     @InjectRepository(Calendar)
     private eventsCalendarRepo: Repository<Calendar>,
+    private googleService: GoogleService,
   ) {}
 
   //Первичная авторизация в Google календаре
   async authCalendar() {
-    console.log('Запустили скрипт авторизации');
-    console.log('this.CREDENTIALS_PATH', this.CREDENTIALS_PATH);
     let client;
     try {
       client = await authenticate({
@@ -121,7 +121,9 @@ export class CalendarService {
   }
 
   async insertEventsByDateBase(events, calendarId, namePlace) {
-    let auth = await this.performCallback();
+    // в этом сценарии нам нужно получить auth из сценария авторизации в Google APi то есть мы должны обратиться в google service и от туда получить авторизационные данные
+    //let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     calendar.events.insert(
@@ -182,7 +184,7 @@ export class CalendarService {
     });
   }
 
-  // Сценарий проверки на этап Нереализовано - если этот этап то распредялть запрос
+  // Первый Сценарий который запускается проверка на этап Нереализовано - если этот этап то распредялть запрос
 
   async checkRequestByDelete(data) {
     let events = await this.findByEventId(data.idLead);

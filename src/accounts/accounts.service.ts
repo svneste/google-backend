@@ -7,6 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { GrantTypes } from 'src/enums/grant-types.enum';
 import { CalendarService } from 'src/calendar/calendar.service';
 import { ConfigService } from '@nestjs/config';
+import { GoogleService } from 'src/google/google.service';
 
 @Injectable()
 export class AccountsService {
@@ -17,11 +18,12 @@ export class AccountsService {
     private authService: AuthService,
     private calendarService: CalendarService,
     private config: ConfigService,
+    private googleService: GoogleService,
   ) {}
 
-  async onModuleInit() {
-    const api = this.createConnector(30062854);
-  }
+  // async onModuleInit() {
+  //   const api = this.createConnector(30062854);
+  // }
 
   findByAmoId(amoId: number): Promise<Account> {
     return this.accountsRepo.findOne({
@@ -73,7 +75,7 @@ export class AccountsService {
     return api;
   }
 
-  async addEventsForArrayBase(leadId) {
+  async addEventsForArrayBase(leadId, accountId) {
     const api = this.createConnector(30062854);
     const leadsList = await api.get(`/api/v4/leads/${leadId}`);
 
@@ -132,8 +134,10 @@ export class AccountsService {
     });
 
     console.log('Подготовить данные для передачи', playload)
+  
+   const client = await this.googleService.authorized(accountId)
 
-    this.calendarService.checkRequestByDelete(playload);
+  this.calendarService.checkRequestByDelete(playload);
   }
 
   async createLead(dataForLead) {

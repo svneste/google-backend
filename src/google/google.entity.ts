@@ -1,8 +1,8 @@
 import { OAuthField } from 'src/interfaces/oauth-field.interface';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('google')
-export class AccountSetup {
+@Entity('googleAuth')
+export class Google {
   @PrimaryGeneratedColumn()
   id: number;
 

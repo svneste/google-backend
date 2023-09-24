@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { config } from './config';
 import { CalendarModule } from './calendar/calendar.module';
 import { AccountSetupModule } from './account-setup/account-setup.module';
+import { GoogleModule } from './google/google.module';
 
 @Module({
   imports: [
@@ -15,15 +16,15 @@ import { AccountSetupModule } from './account-setup/account-setup.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      // port: 5431,
-      // username: 'postgres',
-      // password: '123',
-      // database: 'nestjs',
+      port: 5431,
+      username: 'postgres',
+      password: '123',
+      database: 'nestjs',
 
-      port: 5432,
-      username: 'svneste3',
-      password: '37043704',
-      database: 'google',
+      // port: 5432,
+      // username: 'svneste3',
+      // password: '37043704',
+      // database: 'google',
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -31,6 +32,7 @@ import { AccountSetupModule } from './account-setup/account-setup.module';
     AuthModule,
     CalendarModule,
     AccountSetupModule,
+    GoogleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

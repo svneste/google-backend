@@ -1,7 +1,7 @@
-import { All, Controller, Get, Query, Redirect } from '@nestjs/common';
+import { All, Body, Controller, Get, Query, Redirect } from '@nestjs/common';
 import { AccountSetupService } from './account-setup.service';
 
-@Controller('auth')
+@Controller('auth2')
 export class AccountSetupController {
   constructor(private accountService: AccountSetupService) {}
 
@@ -9,16 +9,24 @@ export class AccountSetupController {
   @Redirect()
   login() {
     const authUrl = this.accountService.getAuthUrl();
-    console.log(authUrl)
+    console.log(authUrl);
     return { url: authUrl };
   }
 
   @Get('account-setup/oauth2callback')
   async callback(@Query('code') code: string) {
-    console.log('запустили то что нужно')
     const tokens = await this.accountService.getAccessToken(code);
     const oauthClient = this.accountService.getOAuthClient(tokens);
+    const accessToken = tokens.access_token;
+    
+    this.accountService.saveTokensForGoogle(tokens);
+  }
 
-    console.log(oauthClient)
+  @All('web')
+  async request (@Body() body: any) {
+    let leadId;
+    body.leads.status.map((a) => (leadId = a.id));
+    
+    const response = await this.accountService.createEvent();
   }
 }
