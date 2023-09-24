@@ -2,7 +2,6 @@ import { Injectable, HttpServer } from '@nestjs/common';
 import { google } from 'googleapis';
 const fs = require('fs').promises;
 const path = require('node:path');
-import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { OAuthField } from 'src/interfaces/oauth-field.interface';
 import { Repository } from 'typeorm';
@@ -17,7 +16,6 @@ export class AccountSetupService {
   constructor(
     @InjectRepository(AccountSetup)
     private accountSetupRepo: Repository<AccountSetup>,
-    private httpService: HttpService,
     private config: ConfigService,
   ) {
     this.authClient = new google.auth.OAuth2(
@@ -78,16 +76,16 @@ export class AccountSetupService {
       Authorization: `Bearer ${accessToken}`,
     };
 
-    const response = await this.httpService
-      .request({
-        url,
-        method,
-        headers,
-        data,
-      })
-      .toPromise();
+    // const response = await this.httpService
+    //   .request({
+    //     url,
+    //     method,
+    //     headers,
+    //     data,
+    //   })
+    //   .toPromise();
 
-    return response.data;
+    // return response.data;
   }
 
 
