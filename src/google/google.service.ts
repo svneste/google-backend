@@ -31,15 +31,8 @@ export class GoogleService {
       },
     });
 
-    console.log(client.oauth.refreshToken)
-
     this.authClient.credentials.refresh_token = client.oauth.refreshToken;
     return this.authClient;
-
-    
-
-    // const calendar = google.calendar({ version: 'v3', auth: this.authClient });
-    // console.log(calendar, 'calendar');
   }
 
   getAuthUrl() {

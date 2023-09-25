@@ -19,74 +19,49 @@ export class CalendarService {
     private googleService: GoogleService,
   ) {}
 
-  //Первичная авторизация в Google календаре
-  async authCalendar() {
-    let client;
-    try {
-      client = await authenticate({
-        scopes: this.SCOPES,
-        keyfilePath: this.CREDENTIALS_PATH,
-      });
-    } catch (err) {
-      console.log('Ошибка', err);
-    } finally {
-      console.log('Отработал finally')
-    }
-
-    console.log(client, 'client');
-
-    if (client.credentials) {
-      await this.saveCredentials(client);
-    } else {
-      console.log('ничего нет');
-    }
-  }
-
-
-
   // Обрабатываем ответ от Google который приходит при авторизации пользователя
 
-  async performCallback() {
-    let client = await this.loadSavedCredentialsIfExist();
-    if (client) {
-      return client;
-    }
+  // async performCallback() {
+  //   let client = await this.loadSavedCredentialsIfExist();
+  //   if (client) {
+  //     return client;
+  //   }
 
-    client = await authenticate({
-      scopes: this.SCOPES,
-      keyfilePath: this.CREDENTIALS_PATH,
-    });
+  //   client = await authenticate({
+  //     scopes: this.SCOPES,
+  //     keyfilePath: this.CREDENTIALS_PATH,
+  //   });
 
-    if (client.credentials) {
-      await this.saveCredentials(client);
-    }
-    return client;
-  }
+  //   if (client.credentials) {
+  //     await this.saveCredentials(client);
+  //   }
+  //   return client;
+  // }
 
   // Функция которая проверяет существующие данные и если данные есть проводит авторизацию
 
-  async loadSavedCredentialsIfExist(): Promise<any> {
-    try {
-      const content = await fs.readFile(this.TOKEN_PATH);
-      const credentials = JSON.parse(content);
-      return google.auth.fromJSON(credentials);
-    } catch (err) {
-      return null;
-    }
-  }
+  // async loadSavedCredentialsIfExist(): Promise<any> {
+  //   try {
+  //     const content = await fs.readFile(this.TOKEN_PATH);
+  //     const credentials = JSON.parse(content);
+  //     return google.auth.fromJSON(credentials);
+  //   } catch (err) {
+  //     return null;
+  //   }
+  // }
 
-  async saveCredentials(client) {
-    const content = await fs.readFile(this.CREDENTIALS_PATH);
-    const keys = JSON.parse(content);
-    const key = keys.installed || keys.web;
-    const payload = JSON.stringify({
-      type: 'authorized_user',
-      client_id: key.client_id,
-      client_secret: key.client_secret,
-      refresh_token: client.credentials.refresh_token,
-    });
-    await fs.writeFile(this.TOKEN_PATH, payload);
-  }
+  // async saveCredentials(client) {
+  //   const content = await fs.readFile(this.CREDENTIALS_PATH);
+  //   const keys = JSON.parse(content);
+  //   const key = keys.installed || keys.web;
+  //   const payload = JSON.stringify({
+  //     type: 'authorized_user',
+  //     client_id: key.client_id,
+  //     client_secret: key.client_secret,
+  //     refresh_token: client.credentials.refresh_token,
+  //   });
+  //   await fs.writeFile(this.TOKEN_PATH, payload);
+  // }
 
   SCOPES = [
     'https://www.googleapis.com/auth/calendar',
@@ -121,9 +96,6 @@ export class CalendarService {
   }
 
   async insertEventsByDateBase(events, calendarId, namePlace) {
-    // в этом сценарии нам нужно получить auth из сценария авторизации в Google APi то есть мы должны обратиться в google service и от туда получить авторизационные данные
-    //let auth = await this.performCallback();
-    console.log('Запущен insertEventsByDateBase')
     let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
@@ -168,7 +140,6 @@ export class CalendarService {
   // добавляем в базу идентификаторы событий календаря / обновление данных в базе
 
   async updateDateBaseInfoByEvent(data, infoByEvent, namePlace) {
-    console.log(data.idEvent, 'data.idEvent');
     data.idEvent.push(`${infoByEvent.id}/${namePlace}`);
     this.eventsCalendarRepo.save(data);
   }
@@ -216,8 +187,6 @@ export class CalendarService {
       await this.eventsCalendarRepo.save(data);
       await this.prepareDateForCalendar(data.idLead);
     } else {
-      /// Если запись в базе есть - и статус нереализовано нужно найти какие есть события в календаре и удалить из из календаря и убрать из базы
-
       console.log(events, 'вот это нашли в базе');
       if (events.placeEvent.length !== data.placeEvent.length) {
         // данные по площадкам текущей сделки отличаются - нужно проверять удалять события или добавлять ! Нужно еще проверять вдруг площадка другая хотя количество не менялось
@@ -234,7 +203,7 @@ export class CalendarService {
         // обновдяем данные в базе данных
         // await this.eventsCalendarRepo.save(events);
         // по тем евентам у которых уже есть событие в календаре нужно обновить данные
-        console.log(events.placeEvent, data.placeEvent);
+
         // по тем евентам у которых записи нет нужно запись добавить
         if (events.placeEvent.length < data.placeEvent.length) {
           console.log(
@@ -293,10 +262,27 @@ export class CalendarService {
           let newArrayPlaceForDataBase = [];
           let eventId = events.idEvent;
 
+          console.log(eventId, 'eventId')
+          console.log(deletePlace, 'deletePlace')
+          console.log(placeByBase, 'placeByBase')
+
+          let eventIdResult = [];
+
+          // перебираем этот массив с идентификатора событий и готовим новый массив который нужно сохранить в базе и обработать 
+          eventId.map((a) => {
+            let eventId = a;
+            placeByBase.map((a) => {
+              if (eventId.split('/')[1] === a) {
+                eventIdResult.push(eventId);
+              }
+            })
+          })
+
+          console.log(eventIdResult, 'eventIdResult')
+
           placeByBase.map((a) => {
             let placeByBase = a;
             eventId.map((a) => {
-              newArrayPlaceForDataBase.push(a);
               events.leadName = data.leadName;
               events.status_id = data.status_id;
               events.nameEvent = data.nameEvent;
@@ -306,11 +292,12 @@ export class CalendarService {
               events.dataEndEvent = data.dataEndEvent;
               events.formatEvent = data.formatEvent;
               events.placeEvent = data.placeEvent;
-              events.idEvent = newArrayPlaceForDataBase;
-              this.eventsCalendarRepo.save(events);
-              if (a.split('/')[1] === placeByBase) {
-                this.updateEventForCalendarPrepareData(events.idLead);
-              }
+              events.idEvent = eventIdResult;
+              console.log('Запустили сохранение новых данных в базу:',events)
+              this.updateDataForBase(events);
+
+              // сделать так чтобы обновление событий было из базы 
+              this.updateEventForCalendarPrepareData(events.idLead);
             });
           });
 
@@ -360,48 +347,48 @@ export class CalendarService {
   async updateEventForCalendarPrepareData(idLead) {
     let events = await this.findByEventId(idLead);
 
-    console.log('Здесь мы получаем из базы уже обновленные данные?', events);
-
     events.idEvent.map((a) => {
       let idEvent = a.split('/')[0];
       let calendarIdName = a.split('/')[1].replace(/\s+/g, '');
       let calendarId = this.config.get(`${calendarIdName}`);
 
-      this.getEventForCalendar(calendarId, idEvent, events);
+      this.getEventForCalendar(calendarId, idEvent, events, idLead);
     });
   }
 
-  async getEventForCalendar(calendarId, eventId, event) {
-    let auth = await this.performCallback();
+  async getEventForCalendar(calendarId, eventId, event, idLead) {
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
-    console.log(event, 'что лежит в event');
     // сперва получает данные по событию из календаря
+
     const res = await calendar.events.get({
       calendarId: calendarId,
       eventId: eventId,
     });
 
-    res.data.start = {
-      dateTime: new Date(event.dataStartEvent * 1000).toISOString(),
-      timeZone: 'Europe/Moscow',
-    };
-    res.data.end = {
-      dateTime: new Date(event.dataEndEvent * 1000).toISOString(),
-      timeZone: 'Europe/Moscow',
-    };
+  
+      res.data.start = {
+        dateTime: new Date(event.dataStartEvent * 1000).toISOString(),
+        timeZone: 'Europe/Moscow',
+      };
+      res.data.end = {
+        dateTime: new Date(event.dataEndEvent * 1000).toISOString(),
+        timeZone: 'Europe/Moscow',
+      };
 
-    res.data.summary = `${this.config.get(event.status_id)} ${
-      event.formatEvent
-    } / ${event.nameEvent} / ${event.numGuests} гостей `;
+      res.data.summary = `${this.config.get(event.status_id)} ${
+        event.formatEvent
+      } / ${event.nameEvent} / ${event.numGuests} гостей `;
 
-    this.updateEventForCalendar(calendarId, eventId, res);
+      this.updateEventForCalendar(calendarId, eventId, res);
+    
   }
 
   // Обновляем данные в календаре
 
   async updateEventForCalendar(calendarId, eventId, event) {
-    let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.update(
@@ -432,7 +419,7 @@ export class CalendarService {
   // ПРОСТО ПОУЧАЕМ СОБЫТИЕ В КАЛЕНДАРЕ
 
   async getEventsNew(calendarId, eventId) {
-    let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     // в res получили событие которое можем дальше использовать или наполнить данными и обновить или удалить
@@ -446,7 +433,7 @@ export class CalendarService {
 
   // Получить событие и обновить в нем данные / нужно заменить на простой поиск события и вслучае необходимости уже в другом сценирии менять данные
   async getEvent(calendarId, eventId, events) {
-    let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     const res = await calendar.events.get({
@@ -484,7 +471,7 @@ export class CalendarService {
 
   // Обновление события в календаре
   async updateEvent(calendarId, eventId, event) {
-    let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.update(
@@ -505,12 +492,13 @@ export class CalendarService {
 
   // удаление события из календаря и из базы
   async deleteEventForCalendar(calendarId, eventId, idLead) {
-    let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.delete({ calendarId, eventId }, (err, event) => {
       if (err) {
         console.log('не удалось удалить событие из календаря' + err);
+        this.deleteEventForBase(idLead);
         return;
       }
       console.log('Событие успешно удалено');
@@ -518,9 +506,15 @@ export class CalendarService {
     });
   }
 
+  // Обновляем данные в базе
+
+  async updateDataForBase (events) {
+    await this.eventsCalendarRepo.save(events);
+  }
+
   // нужно удалить из базы информацию о том какое событие происходит
   async deleteEventForCalendarWithoutBase(calendarId, eventId, idLead) {
-    let auth = await this.performCallback();
+    let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.delete({ calendarId, eventId }, (err, event) => {
@@ -544,5 +538,15 @@ export class CalendarService {
     let events = await this.findByEventId(playload.idLead);
     playload.idEvent.push(`${data.id}/${eventPlace}`);
     this.eventsCalendarRepo.save(playload);
+  }
+
+  async deleteEventIfCancelled(eventId, idLead) {
+    let events = await this.findByEventId(idLead);
+    let newArrayEventId = [];
+    let index = events.idEvent.indexOf(eventId);
+    if (index !== -1) {
+      events.idEvent.splice(index, 1);
+      console.log('events.idEvent', events.idEvent);
+    }
   }
 }

@@ -10,17 +10,4 @@ export class AuthController {
   async callback(@Query() query: AuthCallbackQuery, @Res() res: Response) {
     return res.redirect(await this.authService.performCallback(query));
   }
-
-  @All('/webhooks')
-  async webhooks(@Body() body: any) {
-    let leadId;
-    //получаем ID конкретной сделки
-    body.leads.status.map((a) => (leadId = a.id)); 
-   
-  }
-
-  @Post('/create')
-  async createLead(@Body() body: any) {
-    await this.authService.createLead(body);
-  }
 }

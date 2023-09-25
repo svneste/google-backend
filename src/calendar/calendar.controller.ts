@@ -7,12 +7,7 @@ export class CalendarController {
   constructor(private readonly calendarService: CalendarService, private accountService: AccountsService) {}
   @Get()
   async getCalendar(): Promise<any> {
-    return await this.calendarService.performCallback();
-  }
-
-  @Get('auth')
-  async auth() {
-    await this.calendarService.authCalendar();
+    return 
   }
 
   @All('webhooks')

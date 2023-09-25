@@ -68,12 +68,4 @@ export class AuthService {
       expire: Number(new Date()) + data.expires_in * 1000,
     };
   }
-
-  async getInfoLead(leadId, accountId) {
-    await this.accountsService.addEventsForArrayBase(leadId, accountId);
-  }
-
-  createLead(data) {
-    this.accountsService.createLead(data);
-  }
 }

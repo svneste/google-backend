@@ -99,7 +99,7 @@ export class AccountsService {
     playload.leadLink = `https://eventmoskvaa.amocrm.ru/leads/detail/${leadsList.data.id}`;
 
     playload.responsible_user = leadsList.data.responsible_user_id;
-    playload.statusEvent = leadsList.data.status_id; 
+    playload.statusEvent = leadsList.data.status_id;
 
     leadsList.data.custom_fields_values.map((a) => {
       if (a.field_id === 710465) {
@@ -118,26 +118,23 @@ export class AccountsService {
         a.values.map((a) => (playload.formatEvent = a.value));
       }
       if (a.field_id === 435197) {
-       // playload.placeEvent = a.values.map((a) => (a.value)); 
+        // playload.placeEvent = a.values.map((a) => (a.value));
 
         a.values.map((a) => {
           if (a.value === 'Известия Hall') {
-            playload.placeEvent.push('Hall')
+            playload.placeEvent.push('Hall');
           } else if (a.value === 'Мир') {
-            playload.placeEvent.push('World')
+            playload.placeEvent.push('World');
           } else {
             playload.placeEvent.push(a.value);
           }
-        }); 
-
+        });
       }
     });
 
-    console.log('Подготовить данные для передачи', playload)
-  
-   const client = await this.googleService.authorized(accountId)
+    console.log('Подготовить данные для передачи', playload);
 
-  this.calendarService.checkRequestByDelete(playload);
+    this.calendarService.checkRequestByDelete(playload);
   }
 
   async createLead(dataForLead) {
@@ -146,7 +143,6 @@ export class AccountsService {
 
     await api.post(
       '/api/v4/leads',
-
       [
         {
           name: dataForLead.name,
