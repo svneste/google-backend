@@ -2,6 +2,8 @@
 /dist
 /node_modules
 .env
+credentials.json
+credentials2.json
 
 # Logs
 logs

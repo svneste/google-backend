@@ -144,9 +144,43 @@ export class CalendarService {
     this.eventsCalendarRepo.save(data);
   }
 
+  // отдельный сценарий на удаление если площадки изменились но не изменилось количество
+  async deleteSaveEvent(events, data) {
+    events.idEvent.map((a) => {
+      let calendar = a.split('/')[1].replace(/\s+/g, '');
+      let calendarId = this.config.get(`${calendar}`);
+
+      let eventId = a.split('/')[0];
+
+      this.deleteEventForCalendarIf(calendarId, eventId, events.idLead, data);
+    });
+  }
+
+  // удаляем из календаря для ситуации когда количество площадок не поменялось
+  async deleteEventForCalendarIf (calendarId, eventId, idLead, data) {
+    let auth = await this.googleService.authorized(30062854);
+    const calendar = google.calendar({ version: 'v3', auth });
+
+    await calendar.events.delete({ calendarId, eventId }, (err, event) => {
+      if (err) {
+        console.log('не удалось удалить событие из календаря' + err);
+        this.deleteEventForBase(idLead);
+        return;
+      }
+      console.log('Событие успешно удалено');
+      this.deleteEventForBaseIf(idLead, data);
+    });
+  }
+
+  async deleteEventForBaseIf(idLead, data) {
+    await this.eventsCalendarRepo.delete({ idLead });
+  }
+  
+
   // получаем данные из базы и подготовливаем для передачи в GOOGLE
   async prepareDateForCalendar(idLead) {
     let events = await this.findByEventId(idLead);
+    console.log(events, 'events')
     // нужно получить календарь ID чтобы понимать куда добавлять событие
     events.placeEvent.map((a) => {
       let namePlace = a;
@@ -261,24 +295,19 @@ export class CalendarService {
           );
           let newArrayPlaceForDataBase = [];
           let eventId = events.idEvent;
-
-          console.log(eventId, 'eventId')
-          console.log(deletePlace, 'deletePlace')
-          console.log(placeByBase, 'placeByBase')
-
           let eventIdResult = [];
 
-          // перебираем этот массив с идентификатора событий и готовим новый массив который нужно сохранить в базе и обработать 
+          // перебираем этот массив с идентификатора событий и готовим новый массив который нужно сохранить в базе и обработать
           eventId.map((a) => {
             let eventId = a;
             placeByBase.map((a) => {
               if (eventId.split('/')[1] === a) {
                 eventIdResult.push(eventId);
               }
-            })
-          })
+            });
+          });
 
-          console.log(eventIdResult, 'eventIdResult')
+          console.log(eventIdResult, 'eventIdResult');
 
           placeByBase.map((a) => {
             let placeByBase = a;
@@ -293,10 +322,10 @@ export class CalendarService {
               events.formatEvent = data.formatEvent;
               events.placeEvent = data.placeEvent;
               events.idEvent = eventIdResult;
-              console.log('Запустили сохранение новых данных в базу:',events)
+              console.log('Запустили сохранение новых данных в базу:', events);
               this.updateDataForBase(events);
 
-              // сделать так чтобы обновление событий было из базы 
+              // сделать так чтобы обновление событий было из базы
               this.updateEventForCalendarPrepareData(events.idLead);
             });
           });
@@ -324,6 +353,16 @@ export class CalendarService {
           console.log(
             'Количество площадок не изменился, но изменились сами площадки',
           );
+
+          // делаем отдельный сценарий на удаление
+          try {
+            await this.deleteSaveEvent(events, data);
+          } catch (err) {
+            console.log('Ошибка');
+          }
+          
+          //this.saveDataForBase(data);
+          //this.prepareDateForCalendar(data.idLead);
         } else {
           // площадки остались те же самые - нужно найти мероприятия и обновить по ним  данные
           console.log('Площадки не поменялись - просто обновляем данные');
@@ -367,22 +406,20 @@ export class CalendarService {
       eventId: eventId,
     });
 
-  
-      res.data.start = {
-        dateTime: new Date(event.dataStartEvent * 1000).toISOString(),
-        timeZone: 'Europe/Moscow',
-      };
-      res.data.end = {
-        dateTime: new Date(event.dataEndEvent * 1000).toISOString(),
-        timeZone: 'Europe/Moscow',
-      };
+    res.data.start = {
+      dateTime: new Date(event.dataStartEvent * 1000).toISOString(),
+      timeZone: 'Europe/Moscow',
+    };
+    res.data.end = {
+      dateTime: new Date(event.dataEndEvent * 1000).toISOString(),
+      timeZone: 'Europe/Moscow',
+    };
 
-      res.data.summary = `${this.config.get(event.status_id)} ${
-        event.formatEvent
-      } / ${event.nameEvent} / ${event.numGuests} гостей `;
+    res.data.summary = `${this.config.get(event.status_id)} ${
+      event.formatEvent
+    } / ${event.nameEvent} / ${event.numGuests} гостей `;
 
-      this.updateEventForCalendar(calendarId, eventId, res);
-    
+    this.updateEventForCalendar(calendarId, eventId, res);
   }
 
   // Обновляем данные в календаре
@@ -508,8 +545,12 @@ export class CalendarService {
 
   // Обновляем данные в базе
 
-  async updateDataForBase (events) {
+  async updateDataForBase(events) {
     await this.eventsCalendarRepo.save(events);
+  }
+
+  async saveDataForBase(data) {
+    this.eventsCalendarRepo.save(data);
   }
 
   // нужно удалить из базы информацию о том какое событие происходит
@@ -530,7 +571,7 @@ export class CalendarService {
 
   /// удалить запись в базу данных
   async deleteEventForBase(idLead) {
-    return this.eventsCalendarRepo.delete({ idLead });
+    this.eventsCalendarRepo.delete({ idLead });
   }
 
   /// добавление в базу связанного события
