@@ -419,6 +419,20 @@ export class CalendarService {
     let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
+    const date = new Date(event.dataStartEvent * 1000);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const timeStart = `${hours}:${minutes}`;
+
+    const dateEnd = new Date(event.dataEndEvent * 1000);
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
+    const timeEnd = `${hoursEnd}:${minutesEnd}`;
+
     // сперва получает данные по событию из календаря
 
     const res = await calendar.events.get({
@@ -427,17 +441,17 @@ export class CalendarService {
     });
 
     res.data.start = {
-      dateTime: new Date(event.dataStartEvent * 1000).toISOString(),
+      date: formattedDate,
       timeZone: 'Europe/Moscow',
     };
     res.data.end = {
-      dateTime: new Date(event.dataEndEvent * 1000).toISOString(),
+      date: formattedDate,
       timeZone: 'Europe/Moscow',
     };
 
     res.data.summary = `${this.config.get(event.status_id)} ${
       event.formatEvent
-    } / ${event.nameEvent} / ${event.numGuests} гостей `;
+    } / ${event.nameEvent} / ${timeStart} : ${timeEnd} / ${event.numGuests} гостей `;
 
     this.updateEventForCalendar(calendarId, eventId, res);
   }
@@ -493,6 +507,20 @@ export class CalendarService {
     let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
+    const date = new Date(events.dataStartEvent * 1000);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const timeStart = `${hours}:${minutes}`;
+
+    const dateEnd = new Date(events.dataEndEvent * 1000);
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
+    const timeEnd = `${hoursEnd}:${minutesEnd}`;
+
     const res = await calendar.events.get({
       calendarId: calendarId,
       eventId: eventId,
@@ -514,14 +542,14 @@ export class CalendarService {
     });
 
     res.data.start = {
-      dateTime: new Date(dataStartEvent * 1000).toISOString(),
+      date: formattedDate,
       timeZone: 'Europe/Moscow',
     };
     res.data.end = {
-      dateTime: new Date(dataEndEvent * 1000).toISOString(),
+      date: formattedDate,
       timeZone: 'Europe/Moscow',
     };
-    res.data.summary = `${statusEvent} ${formatEvent} / ${nameEvent} / ${numGuests} гостей `;
+    res.data.summary = `${statusEvent} ${formatEvent} / ${nameEvent} / ${timeStart} : ${timeEnd} / ${numGuests} гостей `;
 
     this.updateEvent(calendarId, eventId, res);
   }
