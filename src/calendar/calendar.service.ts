@@ -99,6 +99,22 @@ export class CalendarService {
     let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
+    const date = new Date(events.dataStartEvent * 1000);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const timeStart = `${hours}:${minutes}`;
+
+    const dateEnd = new Date(events.dataEndEvent * 1000);
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
+    const timeEnd = `${hoursEnd}:${minutesEnd}`;
+
+    console.log('formattedDate', formattedDate);
+
     calendar.events.insert(
       {
         auth: auth,
@@ -106,21 +122,26 @@ export class CalendarService {
         requestBody: {
           summary: `${this.config.get(events.statusEvent)} ${
             events.formatEvent
-          } / ${events.nameEvent} / ${events.numGuests} гостей`,
+          } / ${events.nameEvent} / ${timeStart} : ${timeEnd} / ${events.numGuests} гостей`,
           location: `${namePlace}`,
-          description: `Ответственный сотрудник в amoCRM: ${this.config.get(
-            events.responsible_user,
-          )} <br />Ссылка на сделку в <a href="${
-            events.leadLink
-          }"> amoCRM </a> `,
+          description: `Менеджер в amoCRM: ${events.responsible_user} <br />Ссылка на сделку в <a href="${events.leadLink}"> amoCRM </a> `,
           start: {
-            dateTime: new Date(events.dataStartEvent * 1000).toISOString(),
+            date: formattedDate,
             timeZone: 'Europe/Moscow',
           },
           end: {
-            dateTime: new Date(events.dataEndEvent * 1000).toISOString(),
+            date: formattedDate,
             timeZone: 'Europe/Moscow',
           },
+          // start:
+          // {
+          //   date: new Date(events.dataStartEvent * 1000).toISOString(),
+          //   timeZone: 'Europe/Moscow',
+          // },
+          // end: {
+          //   date: new Date(events.dataEndEvent * 1000).toISOString(),
+          //   timeZone: 'Europe/Moscow',
+          // },
         },
       },
       (err, event) => {
@@ -157,7 +178,7 @@ export class CalendarService {
   }
 
   // удаляем из календаря для ситуации когда количество площадок не поменялось
-  async deleteEventForCalendarIf (calendarId, eventId, idLead, data) {
+  async deleteEventForCalendarIf(calendarId, eventId, idLead, data) {
     let auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
@@ -175,12 +196,11 @@ export class CalendarService {
   async deleteEventForBaseIf(idLead, data) {
     await this.eventsCalendarRepo.delete({ idLead });
   }
-  
 
   // получаем данные из базы и подготовливаем для передачи в GOOGLE
   async prepareDateForCalendar(idLead) {
     let events = await this.findByEventId(idLead);
-    console.log(events, 'events')
+    console.log(events, 'events');
     // нужно получить календарь ID чтобы понимать куда добавлять событие
     events.placeEvent.map((a) => {
       let namePlace = a;
@@ -360,7 +380,7 @@ export class CalendarService {
           } catch (err) {
             console.log('Ошибка');
           }
-          
+
           //this.saveDataForBase(data);
           //this.prepareDateForCalendar(data.idLead);
         } else {

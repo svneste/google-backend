@@ -96,14 +96,20 @@ export class AccountsService {
       idEvent: [],
     };
 
-    playload.leadLink = `https://eventmoskvaa.amocrm.ru/leads/detail/${leadsList.data.id}`;
+    console.log('Информация по сделке', leadsList.data);
 
-    playload.responsible_user = leadsList.data.responsible_user_id;
+    playload.leadLink = `https://sagrado.amocrm.ru/leads/detail/${leadsList.data.id}`;
+
+    //playload.responsible_user = leadsList.data.responsible_user_id;
     playload.statusEvent = leadsList.data.status_id;
 
     leadsList.data.custom_fields_values.map((a) => {
       if (a.field_id === 710465) {
         a.values.map((a) => (playload.dataStartEvent = a.value));
+      }
+
+      if (a.field_id === 636475) {
+        a.values.map((a) => (playload.responsible_user = a.value));
       }
       if (a.field_id === 710467) {
         a.values.map((a) => (playload.dataEndEvent = a.value));
@@ -141,15 +147,12 @@ export class AccountsService {
     console.log(dataForLead.name);
     const api = this.createConnector(30062854);
 
-    await api.post(
-      '/api/v4/leads',
-      [
-        {
-          name: dataForLead.name,
-          created_by: 0,
-          price: dataForLead.price,
-        },
-      ],
-    );
+    await api.post('/api/v4/leads', [
+      {
+        name: dataForLead.name,
+        created_by: 0,
+        price: dataForLead.price,
+      },
+    ]);
   }
 }
