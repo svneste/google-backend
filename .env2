@@ -1,0 +1,67 @@
+# CLIENT_ID=db1dfba1-bfe2-4b9f-a365-c79d9b724177
+# CLIENT_SECRET=qRcAVSesedwv9u8L2Z03FJQIErtqUxd5XHLWDqd9IBgX5x79LCVs6xRlRcLQGepj
+
+CLIENT_ID=fef7f501-ce8f-4e8c-9f9d-37328593a66a
+CLIENT_SECRET=WBhVsgSQI5JPGZnlqrOE5luxXxhkX8Wlzvzmb2DfUAYO3i6d9TsEeitbROJ1L9pL
+REDIRECT_URI=https://api.melabs.ru/auth/callback
+
+GOOGLE_CLIENT_ID=823846756849-3ov5ire1f75ta50v8q6csgcra2dg84ar.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+GOOGLE_REDIRECT_URI=https://api.melabs.ru/google/oauth2callback
+GOOGLE_TOKEN=
+
+GOOGLE_PROJECT_ID=sincere-concept-396611
+GOOGLE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+GOOGLE_TOKEN_URI=https://oauth2.googleapis.com/token
+GOOGLE_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+
+# Список площадок и соответствующих каленарей
+NEBO=b99ff8e5b8293cb5bd46d1e3305ba9847dfd8d8e4b81708fabd288f3fe2d9dc3@group.calendar.google.com
+BlaBlaBar=900c995acec8ef6f5436045f6f596ee236bec627ad9d12979e987016874de2f3@group.calendar.google.com
+VKstadium=3f72464f7327bbaadf1654e8965b9adc674153938b08b6c81c6348e39d59149e@group.calendar.google.com
+LUDI=e3fa8b1993d307debff98f7817db631224f033482267d38b54013f38df3632c9@group.calendar.google.com
+Hall=af14efbe9008b9e00daa6cc5af92e9fcf9d4af39a7983745c5d3e738c0ecda04@group.calendar.google.com
+World=066e1f50f9f8e8bb945733d96f3860c4f096e531320c507b0559f9f12c9a57dc@group.calendar.google.com
+
+# World=gkk94h54nc69ujhpj6s3n3bm64@group.calendar.google.com
+VKGipsy=d9673580c14e3ac6841a25c69fa3d834bc4c2b33f51b6d9df33a5c914e824a2e@group.calendar.google.com
+ATMOSPHERE=8da6e139d24f1e2d8621a3f2377e81ae7067c0ff88ffdd60bb1a621cba09d1cd@group.calendar.google.com
+PapaBarVillageMoscow=4274f8c10ef146a67125c7d9779520045e61ce4c77a5b513645bf8d638e2693e@group.calendar.google.com
+Fantastique=32652b0887be8d375b6b16641d406cba954d584b07766d73317ef48909003d90@group.calendar.google.com
+
+
+
+# Список пользователей
+8015836=Технический аккаунт
+7916818=Максим Вобликов
+8051362=Елена Дударова
+8051368=Юлия Фалина
+8051374=Елизавета Бойко
+10101818=Максим Маркин
+10101826=Сатановская Юлия
+10101990=Зубков Андрей
+10101998=Габриелова Ксения
+10102010=Перепелкина Юлия
+8048017=Ольга Хорошилова
+6109213=Пенченко Юлия
+8051392=Дарья Яковлева
+8051401=Мурад Саитов
+8051410=Кирилл Хоробров
+8606440=Самарина Анастасия
+8606455=Дарья Козловская
+
+
+
+
+
+# Статусы сделок
+58831278=+
+60369134=Пребронь
+
+58831274=БРОНЬ
+
+58831406=+
+58831410=+
+58831282=+
+143=Нереализовано
+142=++

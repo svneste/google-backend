@@ -104,13 +104,13 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours());
-    const minutes = String(date.getMinutes());
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
-    const hoursEnd = String(dateEnd.getHours());
-    const minutesEnd = String(dateEnd.getMinutes());
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
     console.log('formattedDate', formattedDate);
@@ -424,13 +424,13 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours());
-    const minutes = String(date.getMinutes());
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(event.dataEndEvent * 1000);
-    const hoursEnd = String(dateEnd.getHours());
-    const minutesEnd = String(dateEnd.getMinutes());
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
     // сперва получает данные по событию из календаря
@@ -512,13 +512,13 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours());
-    const minutes = String(date.getMinutes());
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
-    const hoursEnd = String(dateEnd.getHours());
-    const minutesEnd = String(dateEnd.getMinutes());
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
     const res = await calendar.events.get({
