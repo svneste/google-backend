@@ -104,12 +104,12 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours()).padStart(2, '0');
+    const hours = String(date.getHours() + 3).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
-    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
@@ -424,12 +424,12 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours()).padStart(2, '0');
+    const hours = String(date.getHours() + 3).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(event.dataEndEvent * 1000);
-    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
@@ -512,12 +512,12 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours()).padStart(2, '0');
+    const hours = String(date.getHours() + 3).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
-    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
+    const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
