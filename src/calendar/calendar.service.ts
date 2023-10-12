@@ -109,6 +109,12 @@ export class CalendarService {
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
+    
+    const yearEnd = dateEnd.getFullYear();
+    const monthEnd = String(dateEnd.getMonth() + 1).padStart(2, '0');
+    const dayEnd = String(dateEnd.getDate()).padStart(2, '0');
+    const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
+
     const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
@@ -130,7 +136,7 @@ export class CalendarService {
             timeZone: 'Europe/Moscow',
           },
           end: {
-            date: formattedDate,
+            date: formattedDateEnd,
             timeZone: 'Europe/Moscow',
           },
           // start:
@@ -428,7 +434,16 @@ export class CalendarService {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
+   
     const dateEnd = new Date(event.dataEndEvent * 1000);
+    
+    const yearEnd = dateEnd.getFullYear();
+    const monthEnd = String(dateEnd.getMonth() + 1).padStart(2, '0');
+    const dayEnd = String(dateEnd.getDate()).padStart(2, '0');
+    const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
+
+
+
     const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
@@ -445,7 +460,7 @@ export class CalendarService {
       timeZone: 'Europe/Moscow',
     };
     res.data.end = {
-      date: formattedDate,
+      date: formattedDateEnd,
       timeZone: 'Europe/Moscow',
     };
 
@@ -517,6 +532,13 @@ export class CalendarService {
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
+    
+    const yearEnd = dateEnd.getFullYear();
+    const monthEnd = String(dateEnd.getMonth() + 1).padStart(2, '0');
+    const dayEnd = String(dateEnd.getDate()).padStart(2, '0');
+    const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
+
+
     const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
@@ -546,7 +568,7 @@ export class CalendarService {
       timeZone: 'Europe/Moscow',
     };
     res.data.end = {
-      date: formattedDate,
+      date: formattedDateEnd,
       timeZone: 'Europe/Moscow',
     };
     res.data.summary = `${statusEvent} ${formatEvent} / ${nameEvent} / ${timeStart} : ${timeEnd} / ${numGuests} гостей `;
