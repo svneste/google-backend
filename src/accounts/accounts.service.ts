@@ -21,10 +21,6 @@ export class AccountsService {
     private googleService: GoogleService,
   ) {}
 
-  // async onModuleInit() {
-  //   const api = this.createConnector(30062854);
-  // }
-
   findByAmoId(amoId: number): Promise<Account> {
     return this.accountsRepo.findOne({
       where: {
@@ -76,10 +72,10 @@ export class AccountsService {
   }
 
   async addEventsForArrayBase(leadId, accountId) {
-    const api = this.createConnector(30062854);
+    const api = this.createConnector(31208198);
     const leadsList = await api.get(`/api/v4/leads/${leadId}`);
 
-    let playload = {
+    const playload = {
       idLead: leadsList.data.id,
       leadName: leadsList.data.name,
       responsible_user: '',
@@ -94,9 +90,8 @@ export class AccountsService {
       numGuests: '',
       placeEvent: [],
       idEvent: [],
+      comment: '',
     };
-
-    console.log('Информация по сделке', leadsList.data);
 
     playload.leadLink = `https://sagrado.amocrm.ru/leads/detail/${leadsList.data.id}`;
 
@@ -104,26 +99,30 @@ export class AccountsService {
     playload.statusEvent = leadsList.data.status_id;
 
     leadsList.data.custom_fields_values.map((a) => {
-      if (a.field_id === 710465) {
+      if (a.field_id === 710465 || a.field_id === 2626327) {
         a.values.map((a) => (playload.dataStartEvent = a.value));
+      }
+      // добавляем код
+      if (a.field_id === 434941) {
+        a.values.map((a) => (playload.comment = a.value));
       }
 
       if (a.field_id === 636475) {
         a.values.map((a) => (playload.responsible_user = a.value));
       }
-      if (a.field_id === 710467) {
+      if (a.field_id === 710467 || a.field_id === 2626329) {
         a.values.map((a) => (playload.dataEndEvent = a.value));
       }
-      if (a.field_id === 710473) {
+      if (a.field_id === 710473 || a.field_id === 2679885) {
         a.values.map((a) => (playload.nameEvent = a.value));
       }
-      if (a.field_id === 434935) {
+      if (a.field_id === 434935 || a.field_id === 2679887) {
         a.values.map((a) => (playload.numGuests = a.value));
       }
       if (a.field_id === 646099) {
         a.values.map((a) => (playload.formatEvent = a.value));
       }
-      if (a.field_id === 435197) {
+      if (a.field_id === 435197 || 2679883) {
         // playload.placeEvent = a.values.map((a) => (a.value));
 
         a.values.map((a) => {
@@ -145,7 +144,7 @@ export class AccountsService {
 
   async createLead(dataForLead) {
     console.log(dataForLead.name);
-    const api = this.createConnector(30062854);
+    const api = this.createConnector(31208198);
 
     await api.post('/api/v4/leads', [
       {

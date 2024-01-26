@@ -19,50 +19,6 @@ export class CalendarService {
     private googleService: GoogleService,
   ) {}
 
-  // Обрабатываем ответ от Google который приходит при авторизации пользователя
-
-  // async performCallback() {
-  //   let client = await this.loadSavedCredentialsIfExist();
-  //   if (client) {
-  //     return client;
-  //   }
-
-  //   client = await authenticate({
-  //     scopes: this.SCOPES,
-  //     keyfilePath: this.CREDENTIALS_PATH,
-  //   });
-
-  //   if (client.credentials) {
-  //     await this.saveCredentials(client);
-  //   }
-  //   return client;
-  // }
-
-  // Функция которая проверяет существующие данные и если данные есть проводит авторизацию
-
-  // async loadSavedCredentialsIfExist(): Promise<any> {
-  //   try {
-  //     const content = await fs.readFile(this.TOKEN_PATH);
-  //     const credentials = JSON.parse(content);
-  //     return google.auth.fromJSON(credentials);
-  //   } catch (err) {
-  //     return null;
-  //   }
-  // }
-
-  // async saveCredentials(client) {
-  //   const content = await fs.readFile(this.CREDENTIALS_PATH);
-  //   const keys = JSON.parse(content);
-  //   const key = keys.installed || keys.web;
-  //   const payload = JSON.stringify({
-  //     type: 'authorized_user',
-  //     client_id: key.client_id,
-  //     client_secret: key.client_secret,
-  //     refresh_token: client.credentials.refresh_token,
-  //   });
-  //   await fs.writeFile(this.TOKEN_PATH, payload);
-  // }
-
   SCOPES = [
     'https://www.googleapis.com/auth/calendar',
     'https://www.googleapis.com/auth/calendar.readonly',
@@ -96,7 +52,7 @@ export class CalendarService {
   }
 
   async insertEventsByDateBase(events, calendarId, namePlace) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     const date = new Date(events.dataStartEvent * 1000);
@@ -104,22 +60,20 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours() + 3).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
-    
+
     const yearEnd = dateEnd.getFullYear();
     const monthEnd = String(dateEnd.getMonth() + 1).padStart(2, '0');
-    const dayEnd = String(dateEnd.getDate()).padStart(2, '0');
+    const dayEnd = String(dateEnd.getDate() + 1).padStart(2, '0');
     const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
 
-    const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
-
-    console.log('formattedDate', formattedDate);
 
     calendar.events.insert(
       {
@@ -128,7 +82,8 @@ export class CalendarService {
         requestBody: {
           summary: `${this.config.get(events.statusEvent)} ${
             events.formatEvent
-          } / ${events.nameEvent} / ${timeStart} : ${timeEnd} / ${events.numGuests} гостей`,
+          } / ${events.nameEvent} / ${timeStart} : ${timeEnd} / 
+          ${events.numGuests} гостей`,
           location: `${namePlace}`,
           description: `Менеджер в amoCRM: ${events.responsible_user} <br />Ссылка на сделку в <a href="${events.leadLink}"> amoCRM </a> `,
           start: {
@@ -139,15 +94,6 @@ export class CalendarService {
             date: formattedDateEnd,
             timeZone: 'Europe/Moscow',
           },
-          // start:
-          // {
-          //   date: new Date(events.dataStartEvent * 1000).toISOString(),
-          //   timeZone: 'Europe/Moscow',
-          // },
-          // end: {
-          //   date: new Date(events.dataEndEvent * 1000).toISOString(),
-          //   timeZone: 'Europe/Moscow',
-          // },
         },
       },
       (err, event) => {
@@ -174,10 +120,10 @@ export class CalendarService {
   // отдельный сценарий на удаление если площадки изменились но не изменилось количество
   async deleteSaveEvent(events, data) {
     events.idEvent.map((a) => {
-      let calendar = a.split('/')[1].replace(/\s+/g, '');
-      let calendarId = this.config.get(`${calendar}`);
+      const calendar = a.split('/')[1].replace(/\s+/g, '');
+      const calendarId = this.config.get(`${calendar}`);
 
-      let eventId = a.split('/')[0];
+      const eventId = a.split('/')[0];
 
       this.deleteEventForCalendarIf(calendarId, eventId, events.idLead, data);
     });
@@ -185,7 +131,7 @@ export class CalendarService {
 
   // удаляем из календаря для ситуации когда количество площадок не поменялось
   async deleteEventForCalendarIf(calendarId, eventId, idLead, data) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.delete({ calendarId, eventId }, (err, event) => {
@@ -205,21 +151,21 @@ export class CalendarService {
 
   // получаем данные из базы и подготовливаем для передачи в GOOGLE
   async prepareDateForCalendar(idLead) {
-    let events = await this.findByEventId(idLead);
+    const events = await this.findByEventId(idLead);
     console.log(events, 'events');
     // нужно получить календарь ID чтобы понимать куда добавлять событие
     events.placeEvent.map((a) => {
-      let namePlace = a;
-      let namePlaceForEnv = a.replace(/\s+/g, '');
-      let calendarId = this.config.get(`${namePlaceForEnv}`);
+      const namePlace = a;
+      const namePlaceForEnv = a.replace(/\s+/g, '');
+      const calendarId = this.config.get(`${namePlaceForEnv}`);
       this.insertEventsByDateBase(events, calendarId, namePlace);
     });
   }
 
-  // Первый Сценарий который запускается проверка на этап Нереализовано - если этот этап то распредялть запрос
+  // Старт. Ищем событие в базе. Проверяем если статус нереализовано удаляем событие
 
   async checkRequestByDelete(data) {
-    let events = await this.findByEventId(data.idLead);
+    const events = await this.findByEventId(data.idLead);
 
     if (data.status_id === 143) {
       if (!events) {
@@ -227,9 +173,9 @@ export class CalendarService {
       } else {
         // здесь выполняем поиск события и удаляем его из календаря и базы
         events.idEvent.map((a) => {
-          let idEvent = a.split('/')[0];
-          let calendarIdName = a.split('/')[1].replace(/\s+/g, '');
-          let calendarId = this.config.get(`${calendarIdName}`);
+          const idEvent = a.split('/')[0];
+          const calendarIdName = a.split('/')[1].replace(/\s+/g, '');
+          const calendarId = this.config.get(`${calendarIdName}`);
           console.log('Удаляем события из календаря и базы');
           this.deleteEventForCalendar(calendarId, idEvent, events.idLead);
         });
@@ -271,10 +217,10 @@ export class CalendarService {
           );
 
           // сравниваем два массива и находим новые элементы - которые сохраняем в новый массив и для этого массива создаем новые события
-          let newPlace = data.placeEvent.filter(
+          const newPlace = data.placeEvent.filter(
             (item) => !events.placeEvent.includes(item),
           );
-          let placeByBase = data.placeEvent.filter((item) =>
+          const placeByBase = data.placeEvent.filter((item) =>
             events.placeEvent.includes(item),
           ); // это массив данные в котором нужно обновить
 
@@ -288,7 +234,7 @@ export class CalendarService {
             events.dataEndEvent = data.dataEndEvent;
             events.formatEvent = data.formatEvent;
             events.placeEvent = data.placeEvent;
-            let calendarId = this.config.get(a.replace(/\s+/g, ''));
+            const calendarId = this.config.get(a.replace(/\s+/g, ''));
             this.eventsCalendarRepo.save(events);
             this.updateEventForCalendarPrepareData(events.idLead);
           });
@@ -303,7 +249,7 @@ export class CalendarService {
             events.dataEndEvent = data.dataEndEvent;
             events.formatEvent = data.formatEvent;
             events.placeEvent = data.placeEvent;
-            let calendarId = this.config.get(a.replace(/\s+/g, ''));
+            const calendarId = this.config.get(a.replace(/\s+/g, ''));
             this.insertEventsByDateBase(events, calendarId, a);
           });
         }
@@ -313,19 +259,19 @@ export class CalendarService {
           console.log(
             'Площадок стало меньше нужно убрать лишние события из календаря',
           );
-          let deletePlace = events.placeEvent.filter(
+          const deletePlace = events.placeEvent.filter(
             (item) => !data.placeEvent.includes(item),
           );
-          let placeByBase = events.placeEvent.filter((item) =>
+          const placeByBase = events.placeEvent.filter((item) =>
             data.placeEvent.includes(item),
           );
-          let newArrayPlaceForDataBase = [];
-          let eventId = events.idEvent;
-          let eventIdResult = [];
+          const newArrayPlaceForDataBase = [];
+          const eventId = events.idEvent;
+          const eventIdResult = [];
 
           // перебираем этот массив с идентификатора событий и готовим новый массив который нужно сохранить в базе и обработать
           eventId.map((a) => {
-            let eventId = a;
+            const eventId = a;
             placeByBase.map((a) => {
               if (eventId.split('/')[1] === a) {
                 eventIdResult.push(eventId);
@@ -336,7 +282,7 @@ export class CalendarService {
           console.log(eventIdResult, 'eventIdResult');
 
           placeByBase.map((a) => {
-            let placeByBase = a;
+            const placeByBase = a;
             eventId.map((a) => {
               events.leadName = data.leadName;
               events.status_id = data.status_id;
@@ -357,8 +303,8 @@ export class CalendarService {
           });
 
           deletePlace.map((a) => {
-            let calendarId = this.config.get(a.replace(/\s+/g, ''));
-            let deletePlace = a;
+            const calendarId = this.config.get(a.replace(/\s+/g, ''));
+            const deletePlace = a;
             eventId.map((a) => {
               if (a.split('/')[1] === deletePlace) {
                 this.deleteEventForCalendarWithoutBase(
@@ -410,19 +356,19 @@ export class CalendarService {
   //NEW ОПРЕДЕЛЯЕМ СОБЫТИЕ И ОБНОВЛЯЕМ В НЕМ ДАННЫЕ
 
   async updateEventForCalendarPrepareData(idLead) {
-    let events = await this.findByEventId(idLead);
+    const events = await this.findByEventId(idLead);
 
     events.idEvent.map((a) => {
-      let idEvent = a.split('/')[0];
-      let calendarIdName = a.split('/')[1].replace(/\s+/g, '');
-      let calendarId = this.config.get(`${calendarIdName}`);
+      const idEvent = a.split('/')[0];
+      const calendarIdName = a.split('/')[1].replace(/\s+/g, '');
+      const calendarId = this.config.get(`${calendarIdName}`);
 
       this.getEventForCalendar(calendarId, idEvent, events, idLead);
     });
   }
 
   async getEventForCalendar(calendarId, eventId, event, idLead) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     const date = new Date(event.dataStartEvent * 1000);
@@ -430,21 +376,18 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours() + 3).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
-   
     const dateEnd = new Date(event.dataEndEvent * 1000);
-    
+
     const yearEnd = dateEnd.getFullYear();
     const monthEnd = String(dateEnd.getMonth() + 1).padStart(2, '0');
     const dayEnd = String(dateEnd.getDate()).padStart(2, '0');
     const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
 
-
-
-    const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
@@ -474,7 +417,7 @@ export class CalendarService {
   // Обновляем данные в календаре
 
   async updateEventForCalendar(calendarId, eventId, event) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.update(
@@ -505,7 +448,7 @@ export class CalendarService {
   // ПРОСТО ПОУЧАЕМ СОБЫТИЕ В КАЛЕНДАРЕ
 
   async getEventsNew(calendarId, eventId) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     // в res получили событие которое можем дальше использовать или наполнить данными и обновить или удалить
@@ -519,7 +462,7 @@ export class CalendarService {
 
   // Получить событие и обновить в нем данные / нужно заменить на простой поиск события и вслучае необходимости уже в другом сценирии менять данные
   async getEvent(calendarId, eventId, events) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     const date = new Date(events.dataStartEvent * 1000);
@@ -527,19 +470,18 @@ export class CalendarService {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    const hours = String(date.getHours() + 3).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const timeStart = `${hours}:${minutes}`;
 
     const dateEnd = new Date(events.dataEndEvent * 1000);
-    
+
     const yearEnd = dateEnd.getFullYear();
     const monthEnd = String(dateEnd.getMonth() + 1).padStart(2, '0');
     const dayEnd = String(dateEnd.getDate()).padStart(2, '0');
     const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
 
-
-    const hoursEnd = String(dateEnd.getHours() + 3).padStart(2, '0');
+    const hoursEnd = String(dateEnd.getHours()).padStart(2, '0');
     const minutesEnd = String(dateEnd.getMinutes()).padStart(2, '0');
     const timeEnd = `${hoursEnd}:${minutesEnd}`;
 
@@ -578,7 +520,7 @@ export class CalendarService {
 
   // Обновление события в календаре
   async updateEvent(calendarId, eventId, event) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.update(
@@ -599,7 +541,7 @@ export class CalendarService {
 
   // удаление события из календаря и из базы
   async deleteEventForCalendar(calendarId, eventId, idLead) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.delete({ calendarId, eventId }, (err, event) => {
@@ -625,12 +567,11 @@ export class CalendarService {
 
   // нужно удалить из базы информацию о том какое событие происходит
   async deleteEventForCalendarWithoutBase(calendarId, eventId, idLead) {
-    let auth = await this.googleService.authorized(30062854);
+    const auth = await this.googleService.authorized(30062854);
     const calendar = google.calendar({ version: 'v3', auth });
 
     await calendar.events.delete({ calendarId, eventId }, (err, event) => {
       if (err) {
-        console.log('не удалось удалить событие из календаря' + err);
         return;
       }
       console.log('Событие успешно удалено');
@@ -646,15 +587,15 @@ export class CalendarService {
 
   /// добавление в базу связанного события
   async insertIdEventForBase(data, playload, eventPlace) {
-    let events = await this.findByEventId(playload.idLead);
+    const events = await this.findByEventId(playload.idLead);
     playload.idEvent.push(`${data.id}/${eventPlace}`);
     this.eventsCalendarRepo.save(playload);
   }
 
   async deleteEventIfCancelled(eventId, idLead) {
-    let events = await this.findByEventId(idLead);
-    let newArrayEventId = [];
-    let index = events.idEvent.indexOf(eventId);
+    const events = await this.findByEventId(idLead);
+    const newArrayEventId = [];
+    const index = events.idEvent.indexOf(eventId);
     if (index !== -1) {
       events.idEvent.splice(index, 1);
       console.log('events.idEvent', events.idEvent);

@@ -7,13 +7,13 @@ export class CalendarController {
   constructor(private readonly calendarService: CalendarService, private accountService: AccountsService) {}
   @Get()
   async getCalendar(): Promise<any> {
-    return 
+    return;
   }
 
   @All('webhooks')
   async webhooks(@Body() body: any) {
     let leadId;
-    body.leads.status.map((a) => (leadId = a.id)); 
+    body.leads.status.map((a) => (leadId = a.id));
     this.accountService.addEventsForArrayBase(leadId, body.account.id);
   }
 }
